@@ -4,8 +4,9 @@ const cors = require('cors');
 
 const app = express();
 
+
 // ══════════════════════════════════════════
-// MIDDLEWARES
+// CORS CONFIG
 // ══════════════════════════════════════════
 
 app.use(cors({
@@ -17,52 +18,68 @@ app.use(cors({
   credentials: true
 }));
 
+// Preflight requests
 app.options("*", cors());
+
+
+// ══════════════════════════════════════════
+// MIDDLEWARES
+// ══════════════════════════════════════════
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 // Logger básico
 app.use((req, _res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
+
+
 // ══════════════════════════════════════════
-// RUTAS
+// IMPORTS
 // ══════════════════════════════════════════
 
 const authMiddleware = require('./middleware/auth');
 
-// 🔐 Auth
+
+// ══════════════════════════════════════════
+// RUTAS API
+// ══════════════════════════════════════════
+
+// 🔐 AUTH
 app.use('/api/auth', require('./routes/auth'));
 
-// 📦 Productos
+// 📦 PRODUCTOS
 app.use('/api/productos', require('./routes/productos'));
 
-// 📊 Inventario
+// 📊 INVENTARIO
 app.use('/api/inventario', require('./routes/inventario'));
 
-// 🧾 Ventas (protegidas)
+// 🧾 VENTAS (PROTEGIDAS)
 app.use('/api/ventas', authMiddleware, require('./routes/ventas'));
 
-// 🧾 Facturas (protegidas)
+// 🧾 FACTURAS (PROTEGIDAS)
 app.use('/api/facturas', authMiddleware, require('./routes/facturas'));
 
-// 👥 Empleados
+// 👥 EMPLEADOS
 app.use('/api/empleados', require('./routes/empleados'));
 
-// 🔍 Buscar producto
+// 🔍 BUSCAR PRODUCTO
 app.use('/api/buscar-producto', require('./routes/buscarProducto'));
 
-// 🏪 Tiendas
+// 🏪 TIENDAS
 app.use('/api/tiendas', require('./routes/tiendas'));
 
-// 📈 Reportes
+// 📈 REPORTES
 app.use('/api/reportes', require('./routes/reportes'));
+
 
 // ══════════════════════════════════════════
 // HEALTH CHECK
 // ══════════════════════════════════════════
+
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
@@ -70,30 +87,34 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+
 // ══════════════════════════════════════════
-// 404
+// 404 HANDLER
 // ══════════════════════════════════════════
+
 app.use((_req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
+
 // ══════════════════════════════════════════
-// ERROR GLOBAL
+// ERROR HANDLER
 // ══════════════════════════════════════════
+
 app.use((err, _req, res, _next) => {
-  console.error('Error no controlado:', err);
+  console.error('Error:', err);
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
+
 // ══════════════════════════════════════════
-// INICIO SERVIDOR
+// SERVER
 // ══════════════════════════════════════════
+
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
-  console.log(`\n🛒 Backend corriendo en: http://localhost:${PORT}`);
-  console.log(`   Supabase: ${process.env.SUPABASE_URL ? 'OK' : 'FALTA SUPABASE_URL'}`);
-  console.log(`   JWT:      ${process.env.JWT_SECRET ? 'OK' : 'FALTA JWT_SECRET'}\n`);
+  console.log(`🛒 Backend corriendo en http://localhost:${PORT}`);
 });
 
 module.exports = app;
