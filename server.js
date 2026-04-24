@@ -8,9 +8,9 @@ const app = express();
 // MIDDLEWARES
 // ══════════════════════════════════════════
 
-// 🔥 CORS CORREGIDO (IMPORTANTE)
+//  CORS CORREGIDO (IMPORTANTE)
 app.use(cors({
-  origin: true, // permite cualquier frontend (Vercel preview y producción)
+  origin: "https://tiendasaz1.vercel.app",
   credentials: true
 }));
 
