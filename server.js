@@ -8,9 +8,6 @@ const app = express();
 // MIDDLEWARES
 // ══════════════════════════════════════════
 
-//  CORS CORREGIDO (IMPORTANTE)
-const cors = require('cors');
-
 app.use(cors({
   origin: [
     "https://tiendasaz1.vercel.app",
@@ -19,6 +16,9 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
+
+app.options("*", cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,7 +27,6 @@ app.use((req, _res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
-
 // ══════════════════════════════════════════
 // RUTAS
 // ══════════════════════════════════════════
