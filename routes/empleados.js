@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
       .single();
     if (error) throw error;
 
-    // 2️⃣ Registrar automáticamente en inicio_sesion (contraseña hasheada con bcrypt)
+    // 2️ Registrar automáticamente en inicio_sesion (contraseña hasheada con bcrypt)
     // La contraseña inicial es la que el administrador definió, o el RFC por defecto
     const clavePlana = contrasena_inicial && contrasena_inicial.trim()
       ? contrasena_inicial.trim()
@@ -83,7 +83,7 @@ router.post('/', async (req, res) => {
       console.error('Error registrando inicio_sesion:', errorSesion.message);
     }
 
-    // 3️⃣ Insertar teléfonos si vienen
+    // 3️ Insertar teléfonos si vienen
     if (telefonos?.length) {
       const tels = telefonos.map(t => ({
         telefono: t.telefono,

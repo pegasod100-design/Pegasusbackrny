@@ -117,7 +117,7 @@ router.put('/limite-stock', async (req, res) => {
 });
 
 
-// 🔥🔥 DISTRIBUIR PRODUCTO A TIENDA (LO QUE TÚ NECESITAS)
+//  DISTRIBUIR PRODUCTO A TIENDA (LO QUE TÚ NECESITAS)
 router.post('/asignar', async (req, res) => {
   try {
     const { codigo_producto, id_tienda, stock_inicial } = req.body;
@@ -150,7 +150,7 @@ router.post('/asignar', async (req, res) => {
 });
 
 
-// 🔥 ELIMINAR PRODUCTO DE UNA TIENDA
+//  ELIMINAR PRODUCTO DE UNA TIENDA
 router.delete('/remover', async (req, res) => {
   try {
     const { codigo_producto, id_tienda } = req.body;

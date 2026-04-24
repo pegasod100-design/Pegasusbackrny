@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
       return res.status(401).json({ error: 'No se pudo identificar al empleado. Vuelve a iniciar sesión.' });
     }
 
-    // 1️⃣ Insertar factura con el RFC del empleado logueado
+    // 1️ Insertar factura con el RFC del empleado logueado
     const { data: factura, error: e1 } = await supabase
       .from('facturas')
       .insert({ folio_factura, empresa_proveedora, id_tienda: parseInt(id_tienda), rfc_empleado })
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
       .single();
     if (e1) throw e1;
 
-    // 2️⃣ Insertar detalle
+    // 2️ Insertar detalle
     const detalles = items.map(item => ({
       folio_factura: factura.folio_factura,
       codigo_producto: item.codigo_producto,

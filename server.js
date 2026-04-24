@@ -7,8 +7,10 @@ const app = express();
 // ══════════════════════════════════════════
 // MIDDLEWARES
 // ══════════════════════════════════════════
+
+// 🔥 CORS CORREGIDO (IMPORTANTE)
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: true, // permite cualquier frontend (Vercel preview y producción)
   credentials: true
 }));
 
@@ -36,16 +38,16 @@ app.use('/api/productos', require('./routes/productos'));
 // 📊 Inventario
 app.use('/api/inventario', require('./routes/inventario'));
 
-// 🧾 Ventas — requiere sesión para tomar el RFC del cajero
+// 🧾 Ventas (protegidas)
 app.use('/api/ventas', authMiddleware, require('./routes/ventas'));
 
-// 🧾 Facturas — requiere sesión para tomar el RFC del empleado
+// 🧾 Facturas (protegidas)
 app.use('/api/facturas', authMiddleware, require('./routes/facturas'));
 
 // 👥 Empleados
 app.use('/api/empleados', require('./routes/empleados'));
 
-// 🔍 BUSCAR PRODUCTO EN TODAS LAS TIENDAS (debe ir ANTES de /api/tiendas para evitar conflicto con /:id)
+// 🔍 Buscar producto
 app.use('/api/buscar-producto', require('./routes/buscarProducto'));
 
 // 🏪 Tiendas
@@ -53,7 +55,6 @@ app.use('/api/tiendas', require('./routes/tiendas'));
 
 // 📈 Reportes
 app.use('/api/reportes', require('./routes/reportes'));
-
 
 // ══════════════════════════════════════════
 // HEALTH CHECK
@@ -65,14 +66,12 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
-
 // ══════════════════════════════════════════
 // 404
 // ══════════════════════════════════════════
 app.use((_req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
-
 
 // ══════════════════════════════════════════
 // ERROR GLOBAL
@@ -82,7 +81,6 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-
 // ══════════════════════════════════════════
 // INICIO SERVIDOR
 // ══════════════════════════════════════════
@@ -90,8 +88,8 @@ const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`\n🛒 Backend corriendo en: http://localhost:${PORT}`);
-  console.log(`   Supabase: ${process.env.SUPABASE_URL ? '✅ OK' : '❌ FALTA SUPABASE_URL'}`);
-  console.log(`   JWT:      ${process.env.JWT_SECRET ? '✅ OK' : '❌ FALTA JWT_SECRET'}\n`);
+  console.log(`   Supabase: ${process.env.SUPABASE_URL ? 'OK' : 'FALTA SUPABASE_URL'}`);
+  console.log(`   JWT:      ${process.env.JWT_SECRET ? 'OK' : 'FALTA JWT_SECRET'}\n`);
 });
 
 module.exports = app;
