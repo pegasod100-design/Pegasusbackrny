@@ -9,11 +9,16 @@ const app = express();
 // ══════════════════════════════════════════
 
 //  CORS CORREGIDO (IMPORTANTE)
+const cors = require('cors');
+
 app.use(cors({
-  origin: "https://tiendasaz1.vercel.app",
+  origin: [
+    "https://tiendasaz1.vercel.app",
+    "http://localhost:5173"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
