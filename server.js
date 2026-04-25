@@ -4,31 +4,16 @@ const cors = require('cors');
 
 const app = express();
 
-
-// ══════════════════════════════════════════
-// CORS CONFIG
-// ══════════════════════════════════════════
-
-app.use(cors({
-  origin: [
-    "https://tiendasaz1.vercel.app",
-    "http://localhost:5173"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true
-}));
-
-// Preflight requests
-app.options("*", cors());
-
-
 // ══════════════════════════════════════════
 // MIDDLEWARES
 // ══════════════════════════════════════════
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 // Logger básico
 app.use((req, _res, next) => {
@@ -36,50 +21,43 @@ app.use((req, _res, next) => {
   next();
 });
 
-
 // ══════════════════════════════════════════
-// IMPORTS
+// RUTAS
 // ══════════════════════════════════════════
 
 const authMiddleware = require('./middleware/auth');
 
-
-// ══════════════════════════════════════════
-// RUTAS API
-// ══════════════════════════════════════════
-
-// 🔐 AUTH
+// 🔐 Auth
 app.use('/api/auth', require('./routes/auth'));
 
-// 📦 PRODUCTOS
+// 📦 Productos
 app.use('/api/productos', require('./routes/productos'));
 
-// 📊 INVENTARIO
+// 📊 Inventario
 app.use('/api/inventario', require('./routes/inventario'));
 
-// 🧾 VENTAS (PROTEGIDAS)
+// 🧾 Ventas — requiere sesión para tomar el RFC del cajero
 app.use('/api/ventas', authMiddleware, require('./routes/ventas'));
 
-// 🧾 FACTURAS (PROTEGIDAS)
+// 🧾 Facturas — requiere sesión para tomar el RFC del empleado
 app.use('/api/facturas', authMiddleware, require('./routes/facturas'));
 
-// 👥 EMPLEADOS
+// 👥 Empleados
 app.use('/api/empleados', require('./routes/empleados'));
 
-// 🔍 BUSCAR PRODUCTO
+// 🔍 BUSCAR PRODUCTO EN TODAS LAS TIENDAS (debe ir ANTES de /api/tiendas para evitar conflicto con /:id)
 app.use('/api/buscar-producto', require('./routes/buscarProducto'));
 
-// 🏪 TIENDAS
+// 🏪 Tiendas
 app.use('/api/tiendas', require('./routes/tiendas'));
 
-// 📈 REPORTES
+// 📈 Reportes
 app.use('/api/reportes', require('./routes/reportes'));
 
 
 // ══════════════════════════════════════════
 // HEALTH CHECK
 // ══════════════════════════════════════════
-
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
@@ -89,32 +67,31 @@ app.get('/api/health', (_req, res) => {
 
 
 // ══════════════════════════════════════════
-// 404 HANDLER
+// 404
 // ══════════════════════════════════════════
-
 app.use((_req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
 
 // ══════════════════════════════════════════
-// ERROR HANDLER
+// ERROR GLOBAL
 // ══════════════════════════════════════════
-
 app.use((err, _req, res, _next) => {
-  console.error('Error:', err);
+  console.error('Error no controlado:', err);
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
 
 // ══════════════════════════════════════════
-// SERVER
+// INICIO SERVIDOR
 // ══════════════════════════════════════════
-
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
-  console.log(`🛒 Backend corriendo en http://localhost:${PORT}`);
+  console.log(`\n🛒 Backend corriendo en: http://localhost:${PORT}`);
+  console.log(`   Supabase: ${process.env.SUPABASE_URL ? '✅ OK' : '❌ FALTA SUPABASE_URL'}`);
+  console.log(`   JWT:      ${process.env.JWT_SECRET ? '✅ OK' : '❌ FALTA JWT_SECRET'}\n`);
 });
 
 module.exports = app;
