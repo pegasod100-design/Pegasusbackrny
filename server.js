@@ -22,6 +22,16 @@ app.use((req, _res, next) => {
 });
 
 // ══════════════════════════════════════════
+// RUTA RAÍZ ( IMPORTANTE PARA RENDER)
+// ══════════════════════════════════════════
+app.get("/", (_req, res) => {
+  res.json({
+    message: "Backend funcionando 🚀",
+    status: "ok"
+  });
+});
+
+// ══════════════════════════════════════════
 // RUTAS
 // ══════════════════════════════════════════
 
@@ -36,16 +46,16 @@ app.use('/api/productos', require('./routes/productos'));
 // 📊 Inventario
 app.use('/api/inventario', require('./routes/inventario'));
 
-// 🧾 Ventas — requiere sesión para tomar el RFC del cajero
+// 🧾 Ventas
 app.use('/api/ventas', authMiddleware, require('./routes/ventas'));
 
-// 🧾 Facturas — requiere sesión para tomar el RFC del empleado
+// 🧾 Facturas
 app.use('/api/facturas', authMiddleware, require('./routes/facturas'));
 
 // 👥 Empleados
 app.use('/api/empleados', require('./routes/empleados'));
 
-// 🔍 BUSCAR PRODUCTO EN TODAS LAS TIENDAS (debe ir ANTES de /api/tiendas para evitar conflicto con /:id)
+// 🔍 Buscar producto
 app.use('/api/buscar-producto', require('./routes/buscarProducto'));
 
 // 🏪 Tiendas
@@ -53,7 +63,6 @@ app.use('/api/tiendas', require('./routes/tiendas'));
 
 // 📈 Reportes
 app.use('/api/reportes', require('./routes/reportes'));
-
 
 // ══════════════════════════════════════════
 // HEALTH CHECK
@@ -65,14 +74,12 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
-
 // ══════════════════════════════════════════
 // 404
 // ══════════════════════════════════════════
 app.use((_req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
-
 
 // ══════════════════════════════════════════
 // ERROR GLOBAL
@@ -82,16 +89,15 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-
 // ══════════════════════════════════════════
 // INICIO SERVIDOR
 // ══════════════════════════════════════════
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
-  console.log(`\n🛒 Backend corriendo en: http://localhost:${PORT}`);
-  console.log(`   Supabase: ${process.env.SUPABASE_URL ? '✅ OK' : '❌ FALTA SUPABASE_URL'}`);
-  console.log(`   JWT:      ${process.env.JWT_SECRET ? '✅ OK' : '❌ FALTA JWT_SECRET'}\n`);
+  console.log(`🛒 Backend corriendo en puerto: ${PORT}`);
+  console.log(`SUPABASE_URL: ${process.env.SUPABASE_URL ? 'OK' : 'FALTA'}`);
+  console.log(`JWT_SECRET: ${process.env.JWT_SECRET ? 'OK' : 'FALTA'}`);
 });
 
 module.exports = app;
