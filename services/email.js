@@ -106,7 +106,6 @@ async function enviarTicketVenta({ folio, fecha, cajero, tienda, items, subtotal
       </table>
       <div style="margin-top:16px;text-align:right;padding:12px;background:#f8fafc;border-radius:8px;">
         <p style="font-size:13px;color:#475569;margin:4px 0;">Subtotal: <strong>$${parseFloat(subtotal).toFixed(2)}</strong></p>
-        <p style="font-size:13px;color:#475569;margin:4px 0;">IVA (16%): <strong>$${parseFloat(iva).toFixed(2)}</strong></p>
         <p style="font-size:22px;color:#16a34a;font-weight:800;margin:10px 0 0;">TOTAL: $${parseFloat(total).toFixed(2)}</p>
       </div>
       ${!esAdmin ? '<p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">¡Gracias por tu preferencia! 🛒</p>' : ''}

@@ -37,7 +37,7 @@ router.get('/:folio', async (req, res) => {
 // POST /api/ventas — Registrar venta + enviar ticket al admin Y al cliente
 router.post('/', async (req, res) => {
   try {
-    const { iva = 16, id_tienda, items, correo_cliente, nombre_cliente } = req.body;
+    const { iva = 0, id_tienda, items, correo_cliente, nombre_cliente } = req.body;
     const rfc_empleado = req.empleado.rfc;
 
     if (!id_tienda || !items?.length)
@@ -62,8 +62,8 @@ router.post('/', async (req, res) => {
     }
 
     const subtotal   = items.reduce((acc, i) => acc + i.cantidad_venta * i.precio_unitario, 0);
-    const ivaAmount  = subtotal * (iva / 100);
-    const total      = subtotal + ivaAmount;
+    const ivaAmount  = 0;
+    const total      = subtotal;
 
     // 3️⃣ Datos de tienda y cajero
     const [{ data: tiendaData }, { data: cajeroData }] = await Promise.all([
