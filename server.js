@@ -101,3 +101,27 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+// ── TEST EMAIL (solo para diagnóstico — quita en producción) ──────────────────
+app.post('/api/test-email', async (req, res) => {
+  try {
+    const { correo } = req.body;
+    if (!correo) return res.status(400).json({ error: 'correo requerido' });
+    const nodemailer = require('nodemailer');
+    const pass = (process.env.EMAIL_PASS || '').replace(/\s/g, '');
+    const t = nodemailer.createTransport({
+      host: 'smtp.gmail.com', port: 465, secure: true,
+      auth: { user: process.env.EMAIL_USER, pass },
+      tls: { rejectUnauthorized: false },
+    });
+    await t.verify();
+    await t.sendMail({
+      from: `"Abarrotes Test" <${process.env.EMAIL_USER}>`,
+      to: correo,
+      subject: '✅ Email de prueba — Abarrotes',
+      html: '<h2>✅ El email funciona correctamente</h2><p>Si recibiste este correo, la configuración SMTP está bien.</p>',
+    });
+    res.json({ ok: true, mensaje: `Email enviado a ${correo}` });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message, code: err.code });
+  }
+});
